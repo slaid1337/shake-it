@@ -32,7 +32,7 @@ public class GyroController : MonoBehaviour
 
 
     private void Start()
-    {
+    {        
         gyro = Input.gyro;
         gyro.enabled = true;
         points = 0;

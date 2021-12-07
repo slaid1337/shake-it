@@ -53,9 +53,10 @@
     <UnityVersion>2020.3.23f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Assets/main/GyroController.cs" />
     <Compile Include="Assets/main/MoveScript.cs" />
+    <Compile Include="Assets/main/GyroController.cs" />
     <Compile Include="Assets/main/Timer.cs" />
+    <Compile Include="Assets/main/ScoreTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

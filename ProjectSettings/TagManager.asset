@@ -9,6 +9,9 @@ TagManager:
   - bg
   - startButton
   - score
+  - tablePlace
+  - tableName
+  - tableScore
   layers:
   - Default
   - TransparentFX
