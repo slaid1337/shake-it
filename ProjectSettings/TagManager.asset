@@ -12,6 +12,12 @@ TagManager:
   - tablePlace
   - tableName
   - tableScore
+  - Panel
+  - startbg
+  - mark
+  - tableButton
+  - answer
+  - bar
   layers:
   - Default
   - TransparentFX
