@@ -4,8 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class GyroController : MonoBehaviour
-{
-    private Gyroscope gyro;
+{    
     public Text text;
     public int points;
     private bool toTop;
@@ -37,13 +36,16 @@ public class GyroController : MonoBehaviour
     public GameObject startBG;
     [HideInInspector]
     public int comboCounter;
+    public Color[] ballColors;
+    private GameObject[] balls;
+    public GameObject inputName;
+    public InputField fieldName;
+    public Text placeHolderName;
     
     
     private void Start()
     {  
         colorCounter = 0;
-        gyro = Input.gyro;
-        gyro.enabled = true;
         points = 0;
         toTop = true;
         toBottom = false;
@@ -53,6 +55,8 @@ public class GyroController : MonoBehaviour
         gameIsWorking = false;
         move = 0;
         canvas = GameObject.FindGameObjectWithTag("Canvas");
+
+        balls = GameObject.FindGameObjectsWithTag("ball");
         
         startButton = GameObject.FindGameObjectWithTag("startButton");
         tableButton = GameObject.FindGameObjectWithTag("tableButton");
@@ -68,13 +72,23 @@ public class GyroController : MonoBehaviour
         globalPoints = PlayerPrefs.GetInt("points");
 
         text.text = globalPoints.ToString();
+
+        if (PlayerPrefs.GetString("name") == "")
+        {
+            inputName.SetActive(true);
+        }
     }
     private void Update()
     {
         if (gameIsWorking)
         {
             Shake();
-        }
+        }        
+    }
+
+    private void FixedUpdate()
+    {
+        Physics2D.gravity = Input.acceleration * 40;
     }
 
     private void Shake()
@@ -138,6 +152,10 @@ public class GyroController : MonoBehaviour
         else ranColor = 4;
         colorCounter++;
         bg.GetComponent<SpriteRenderer>().color = bgColors[ranColor];
+        for (int i = 0; i < balls.Length; i++)
+        {
+            balls[i].GetComponent<SpriteRenderer>().color = ballColors[ranColor];
+        }
 
         comboCounter++;
 
@@ -167,6 +185,12 @@ public class GyroController : MonoBehaviour
         else ranColor = 4;
         colorCounter++;
         bg.GetComponent<SpriteRenderer>().color = bgColors[ranColor];
+        for (int i = 0; i < balls.Length; i++)
+        {
+            balls[i].GetComponent<SpriteRenderer>().color = ballColors[ranColor];
+        }
+
+
         if (combo[move] == 0) switcher = true;
         else switcher = false;
         move++;
@@ -184,6 +208,12 @@ public class GyroController : MonoBehaviour
         else ranColor = 4;
         colorCounter++;
         bg.GetComponent<SpriteRenderer>().color = bgColors[ranColor];
+        for (int i = 0; i < balls.Length; i++)
+        {
+            balls[i].GetComponent<SpriteRenderer>().color = ballColors[ranColor];
+        }
+
+
         if (combo[move] == 0) switcher = true;
         else switcher = false;
         move++;
@@ -239,5 +269,26 @@ public class GyroController : MonoBehaviour
             return 1;
         }
         return 2;
+    }
+
+    public void ApplyName()
+    {
+        string tempText = fieldName.text;
+
+        if (tempText.Length > 8)
+        {
+            fieldName.text = "";
+            placeHolderName.color = new Vector4(1, 0, 0, 1);           
+            placeHolderName.text = "max 8 symbols!";
+        }
+        else if (tempText.Length <= 0)
+        {
+            placeHolderName.color = new Vector4(1, 0, 0, 1);
+            placeHolderName.text = "Enter name!";
+        }
+        else
+        {
+            PlayerPrefs.SetString("name", fieldName.text);
+        }        
     }
 }

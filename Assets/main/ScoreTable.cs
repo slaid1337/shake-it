@@ -17,7 +17,7 @@ public class ScoreTable : MonoBehaviour
 
     public void OpenTable()
     {
-        playerName = "you";
+        playerName = PlayerPrefs.GetString("name");
         playerScore = PlayerPrefs.GetInt("points");
 
         table = gameObject;

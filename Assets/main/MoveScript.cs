@@ -42,6 +42,7 @@ public class MoveScript : MonoBehaviour
             ct.text.text = "0";
         }
         bar.GetComponent<RectTransform>().sizeDelta = new Vector2(0,100);
+        bar.GetComponent<AudioSource>().Play();
         Destroy(gameObject);
     }
 

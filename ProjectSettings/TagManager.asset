@@ -18,6 +18,8 @@ TagManager:
   - tableButton
   - answer
   - bar
+  - border
+  - ball
   layers:
   - Default
   - TransparentFX
