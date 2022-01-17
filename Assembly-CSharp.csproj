@@ -58,7 +58,6 @@
     <Compile Include="Assets/main/ads/AdController.cs" />
     <Compile Include="Assets/main/GyroController.cs" />
     <Compile Include="Assets/main/Timer.cs" />
-    <Compile Include="Assets/main/BouncingBall.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets/GoogleMobileAds/GoogleMobileAds_version-6.1.2_manifest.txt" />
@@ -68,8 +67,10 @@
     <None Include="Assets/GoogleMobileAds/GoogleMobileAds.iOS.dll" />
     <None Include="Assets/GoogleMobileAds/GoogleMobileAds.Core.dll" />
     <None Include="Assets/GoogleMobileAds/link.xml" />
+    <None Include="Assets/Lean/READ ME.txt" />
     <None Include="Assets/GoogleMobileAds/GoogleMobileAds.Unity.dll" />
     <None Include="Assets/GoogleMobileAds/GoogleMobileAds.Android.dll" />
+    <None Include="Assets/Lean/Third-Party Notices.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -746,6 +747,18 @@
     <ProjectReference Include="GoogleMobileAds.Editor.csproj">
       <Project>{B17C558E-8CDE-345D-E1AC-F5F872EDD95D}</Project>
       <Name>GoogleMobileAds.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="LeanLocalization.csproj">
+      <Project>{B6F929E5-D036-69D8-A2DE-EA87396466AE}</Project>
+      <Name>LeanLocalization</Name>
+    </ProjectReference>
+    <ProjectReference Include="LeanLocalizationEditor.csproj">
+      <Project>{2C043CD3-F633-C7A1-70E5-6E8E0B8F8737}</Project>
+      <Name>LeanLocalizationEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="LeanCommon.csproj">
+      <Project>{228117AA-EC3E-673A-39A7-D42FD2621737}</Project>
+      <Name>LeanCommon</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

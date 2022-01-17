@@ -12,11 +12,13 @@ public class ScoreTable : MonoBehaviour
     public int playerScore;
     public GameObject[] lableFrefs;
     private GameObject panel;
-    private int playerIndexInTable;
-
+    public int playerIndexInTable;
+    public Text scoreButtonText;
+    public bool isFirst;    
 
     public void OpenTable()
-    {
+    {        
+
         playerName = PlayerPrefs.GetString("name");
         playerScore = PlayerPrefs.GetInt("points");
 
@@ -27,22 +29,27 @@ public class ScoreTable : MonoBehaviour
 
         panel = GameObject.FindGameObjectWithTag("Panel");
 
-        for (int i = 0; i < lables.GetLength(0); i++)
+        if (isFirst)
         {
-            if (i == 0)
+            for (int i = 0; i < lables.GetLength(0); i++)
             {
-                Instantiate(lableFrefs[1], panel.transform);
-            }
-            else if (i == lables.GetLength(0) - 1)
-            {
-                Instantiate(lableFrefs[2], panel.transform);
-            }
-            else
-            {
-                Instantiate(lableFrefs[0], panel.transform);
-            }
+                if (i == 0)
+                {
+                    Instantiate(lableFrefs[1], panel.transform);
+                }
+                else if (i == lables.GetLength(0) - 1)
+                {
+                    Instantiate(lableFrefs[2], panel.transform);
+                }
+                else
+                {
+                    Instantiate(lableFrefs[0], panel.transform);
+                }
 
+            }
         }
+
+        isFirst = false;
 
         SortTable();
         GameObject[] places = GameObject.FindGameObjectsWithTag("tablePlace");
@@ -65,12 +72,13 @@ public class ScoreTable : MonoBehaviour
             }
         }       
 
-        panel.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 160 * playerIndexInTable, 0);
-    }
+        panel.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 235 * playerIndexInTable, 0);
+    }   
 
     public void CloseTable()
     {
         panel.transform.GetChild(playerIndexInTable).gameObject.GetComponent<Image>().color = new Vector4(1, 1, 1, 1);
+        scoreButtonText.text = (playerIndexInTable + 1).ToString();
     }
 
     private void FillArray(string nameplayer, int scoreplayer)

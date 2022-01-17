@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class GyroController : MonoBehaviour
-{    
+{
     public Text text;
     public int points;
     private bool toTop;
@@ -24,15 +24,12 @@ public class GyroController : MonoBehaviour
     public int[] combo;
     [HideInInspector]
     public int move;
-    private GameObject canvas;
+    public GameObject canvas;
     private Color[] bgColors = new Color[5];
-    public GameObject bg;    
+    public GameObject bg;
     private int globalPoints;
-    private GameObject startButton;
-    public GameObject[] scores;    
     private int colorCounter;
     public GameObject markParent;
-    private GameObject tableButton;
     public GameObject startBG;
     [HideInInspector]
     public int comboCounter;
@@ -41,10 +38,32 @@ public class GyroController : MonoBehaviour
     public GameObject inputName;
     public InputField fieldName;
     public Text placeHolderName;
-    
-    
+    public Text markText;
+    public GameObject scoreTable;
+    [Header("stars")]
+    public GameObject[] stars;
+    public GameObject[] emptyStars;
+    [Header("buttons")]
+    public GameObject startButton;
+    public GameObject tableButton;
+    public GameObject tableCloseButton;
+    public Text tableButtonText;
+    public GameObject nextButton;
+    [Header("localization")]
+    public GameObject localisation;
+    private string currentLanguage;
+    [Header("tutorial")]
+    public GameObject bgTutor;
+    public GameObject canvasTutor;
+    public GameObject third;
+    public GameObject fourth;
+    [Header("ads")]    
+    public GameObject adController;
+    private int countPlays;
+
+
     private void Start()
-    {  
+    {       
         colorCounter = 0;
         points = 0;
         toTop = true;
@@ -54,16 +73,12 @@ public class GyroController : MonoBehaviour
         switcher = false;
         gameIsWorking = false;
         move = 0;
-        canvas = GameObject.FindGameObjectWithTag("Canvas");
+        countPlays = 0;
 
         balls = GameObject.FindGameObjectsWithTag("ball");
-        
-        startButton = GameObject.FindGameObjectWithTag("startButton");
-        tableButton = GameObject.FindGameObjectWithTag("tableButton");
-        
-        movesCount = Random.Range(2, maxMovesCount + 1);
+                        
         comboCounter = 0;
-
+        
         bgColors[0] = new Color(0.62f, 0.170f, 0.194f,1);
         bgColors[1] = new Color(0.159f, 0.44f, 0.49f,1);
         bgColors[2] = new Color(0f, 0.222f, 0.173f, 1);
@@ -71,13 +86,39 @@ public class GyroController : MonoBehaviour
         bgColors[4] = new Color(0.200f, 0.218f, 0.221f, 1);
         globalPoints = PlayerPrefs.GetInt("points");
 
-        text.text = globalPoints.ToString();
+        text.text = globalPoints.ToString();        
 
         if (PlayerPrefs.GetString("name") == "")
         {
             inputName.SetActive(true);
+            
+            for (int i = 0; i < balls.Length; i++)
+            {
+                balls[i].SetActive(false);
+            }
+        }       
+
+        if (!PlayerPrefs.HasKey("Language"))
+        {
+            if (Application.systemLanguage == SystemLanguage.Russian || Application.systemLanguage == SystemLanguage.Ukrainian || Application.systemLanguage == SystemLanguage.Belarusian)
+            {
+                PlayerPrefs.SetString("Language", "Russian");
+            }
+            else
+            {
+                PlayerPrefs.SetString("Language", "English");
+            }
         }
+        currentLanguage = PlayerPrefs.GetString("Language");
+        localisation.GetComponent<Lean.Localization.LeanLocalization>().CurrentLanguage = currentLanguage;
     }
+
+    public void StartTutor()
+    {
+        bgTutor.SetActive(true);
+        canvasTutor.SetActive(true);
+    }
+
     private void Update()
     {
         if (gameIsWorking)
@@ -130,11 +171,24 @@ public class GyroController : MonoBehaviour
     }
 
     public void StartGame()
-    {                
+    {
+        movesCount = Random.Range(2, maxMovesCount + 1);
         tableButton.SetActive(false);
         startBG.SetActive(false);
         CreateCombo();
-        SpawnMove(combo[move]);        
+        SpawnMove(combo[move]);
+    }
+
+    public void Awake()
+    {
+        UpdateScoreNumber();
+    }    
+
+    public void UpdateScoreNumber()
+    {
+        tableButton.GetComponent<Button>().onClick.Invoke();
+        tableCloseButton.GetComponent<Button>().onClick.Invoke();
+        tableButtonText.text = (scoreTable.GetComponent<ScoreTable>().playerIndexInTable + 1).ToString();
     }
 
     public void SpawnMove(int moveIndex)
@@ -160,7 +214,6 @@ public class GyroController : MonoBehaviour
         comboCounter++;
 
         text.text = "combo step: " +  comboCounter.ToString();
-
     }
 
     public void CreateCombo()
@@ -198,8 +251,8 @@ public class GyroController : MonoBehaviour
     }  
 
     private IEnumerator NextMove()
-    {        
-        yield return new WaitForSeconds(2f);
+    {
+        yield return new WaitForSeconds(2f);       
         int ranColor = 0;
         if (colorCounter % 5 == 0) ranColor = 0;
         else if (colorCounter % 4 == 0) ranColor = 1;
@@ -213,7 +266,6 @@ public class GyroController : MonoBehaviour
             balls[i].GetComponent<SpriteRenderer>().color = ballColors[ranColor];
         }
 
-
         if (combo[move] == 0) switcher = true;
         else switcher = false;
         move++;
@@ -221,32 +273,92 @@ public class GyroController : MonoBehaviour
         else
         {
             yield return new WaitForSeconds(2f);
-            Instantiate(scores[Formula(points, combo)], markParent.transform);
-            markParent.SetActive(true);            
-            StartCoroutine(StopMove());
-            
+            markParent.SetActive(true);
+            markText.text = points.ToString();
             globalPoints += points;
-            points = 0;
             move = 0;
-            gameIsWorking = false;            
+            gameIsWorking = false;
             PlayerPrefs.SetInt("points", globalPoints);
             PlayerPrefs.Save();
+            yield return new WaitForSeconds(1f);
+            text.gameObject.SetActive(false);
+            switch (Formula(points, combo))
+            {
+                case 0:
+                    nextButton.SetActive(true);
+                    break;
+                case 1:
+                    stars[2].SetActive(true);
+                    emptyStars[2].SetActive(false);
+                    stars[2].GetComponent<Animator>().SetBool("enter", true);
+                    yield return new WaitForSeconds(0.1f);
+                    stars[2].GetComponent<Animator>().SetBool("enter", false);
+                    yield return new WaitForSeconds(1f);
+                    nextButton.SetActive(true);
+                    break;
+                case 2:
+                    stars[2].SetActive(true);
+                    emptyStars[2].SetActive(false);
+                    stars[2].GetComponent<Animator>().SetBool("enter", true);
+                    yield return new WaitForSeconds(0.1f);
+                    stars[2].GetComponent<Animator>().SetBool("enter", false);
+                    yield return new WaitForSeconds(1f);
+                    stars[1].SetActive(true);
+                    emptyStars[1].SetActive(false);
+                    stars[1].GetComponent<Animator>().SetBool("enter", true);
+                    yield return new WaitForSeconds(0.1f);
+                    stars[1].GetComponent<Animator>().SetBool("enter", false);
+                    yield return new WaitForSeconds(1f);
+                    nextButton.SetActive(true);
+                    break;
+                case 3:
+                    stars[2].SetActive(true);
+                    emptyStars[2].SetActive(false);
+                    stars[2].GetComponent<Animator>().SetBool("enter", true);
+                    yield return new WaitForSeconds(0.1f);
+                    stars[2].GetComponent<Animator>().SetBool("enter", false);
+                    yield return new WaitForSeconds(1f);
+                    stars[1].SetActive(true);
+                    emptyStars[1].SetActive(false);
+                    stars[1].GetComponent<Animator>().SetBool("enter", true);
+                    yield return new WaitForSeconds(0.1f);
+                    stars[1].GetComponent<Animator>().SetBool("enter", false);
+                    yield return new WaitForSeconds(1f);
+                    stars[0].SetActive(true);
+                    emptyStars[0].SetActive(false);
+                    stars[0].GetComponent<Animator>().SetBool("enter", true);
+                    yield return new WaitForSeconds(0.1f);
+                    stars[0].GetComponent<Animator>().SetBool("enter", false);
+                    yield return new WaitForSeconds(1f);
+                    nextButton.SetActive(true);
+                    break;
+            }            
+            points = 0;
+            countPlays++;
+            if (countPlays % 2 == 0)
+            {
+                adController.GetComponent<AdController>().ShowAd();
+            }
         }
     }
    
-    private IEnumerator StopMove()
+    public void StopMove()
     {        
-        yield return new WaitForSeconds(3f);
         text.text = globalPoints.ToString();
-        Destroy(GameObject.FindGameObjectWithTag("score"));
+        for (int i = 0; i < stars.Length; i++)
+        {
+            stars[i].SetActive(false);
+            emptyStars[i].SetActive(true);
+        }
         markParent.SetActive(false);
         startButton.SetActive(true);
         tableButton.SetActive(true);
         startBG.SetActive(true);
+        UpdateScoreNumber();
     }
 
     private int Formula(int pointsForGame,int[] arr)
-    {  
+    {
         int count = 0;
 
         for (int i = 0; i < arr.Length; i++)
@@ -260,15 +372,20 @@ public class GyroController : MonoBehaviour
                 count += 10;
             }
         }
-        if (pointsForGame >= count)
+        
+        if (pointsForGame >= count + 8)
         {
-            return 0;
+            return 3;
         }
-        else if (pointsForGame < count && pointsForGame > count - 10)
+        else if (pointsForGame >= count)
+        {
+            return 2;
+        }
+        else if (pointsForGame < count && pointsForGame >= count - 10)
         {
             return 1;
-        }
-        return 2;
+        }        
+        return 0;
     }
 
     public void ApplyName()
@@ -289,6 +406,26 @@ public class GyroController : MonoBehaviour
         else
         {
             PlayerPrefs.SetString("name", fieldName.text);
-        }        
+            for (int i = 0; i < balls.Length; i++)
+            {
+                balls[i].SetActive(true);
+            }
+        }
+    }
+
+    public void PouseGame()
+    {
+        Time.timeScale = 0;
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = 1;
     }
 }
+
+//combo number
+
+
+//доделать рекламу
+//добавить inApp чтобы убирать рекламу

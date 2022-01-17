@@ -8,7 +8,7 @@ public class MoveScript : MonoBehaviour
     public GameObject timer;
     private GameObject canvas;
     private GameObject bar;
-    private float chargeValue;
+    private float chargeValue;    
     
 
     private void Start()
@@ -17,12 +17,12 @@ public class MoveScript : MonoBehaviour
         StartCoroutine(NextMove());
         canvas = GameObject.FindGameObjectWithTag("Canvas");
         bar = GameObject.FindGameObjectWithTag("bar");
-        chargeValue = 0;
+        chargeValue = 0;        
     }
 
     private void Update()
     {
-        bar.GetComponent<RectTransform>().sizeDelta = Vector2.Lerp(new Vector2(0,100),new Vector2(800,100),chargeValue);
+        bar.GetComponent<RectTransform>().localScale = Vector2.Lerp(new Vector2(0,1),new Vector2(1,1),chargeValue);
         chargeValue += Time.deltaTime * 0.5f;
     }
 
@@ -41,8 +41,9 @@ public class MoveScript : MonoBehaviour
             ct.comboCounter = 0;
             ct.text.text = "0";
         }
-        bar.GetComponent<RectTransform>().sizeDelta = new Vector2(0,100);
+        bar.GetComponent<RectTransform>().localScale = new Vector2(0,1);
         bar.GetComponent<AudioSource>().Play();
+      
         Destroy(gameObject);
     }
 
